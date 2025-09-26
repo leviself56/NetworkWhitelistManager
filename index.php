@@ -61,14 +61,29 @@ foreach ($addressList as $entry) {
         .active { background: #f44336; color: white; }
     </style>
     <script>
-    async function toggleClient(ip, action) {
-        let formData = new FormData();
-        formData.append("ip", ip);
-        formData.append("action", action);
+    	async function toggleClient(ip, action) {
+		    let formData = new FormData();
+		    formData.append("ip", ip);
+		    formData.append("action", action);
 
-        await fetch("toggle.php", { method: "POST", body: formData });
-        location.reload();
-    }
+		    try {
+		        let res = await fetch("toggle.php", { method: "POST", body: formData });
+		        let data = await res.json();
+
+		        if (data.success) {
+		            // show brief feedback (you can replace with nicer UI)
+		            alert(`Address-list entries removed: ${data.address_list_removed}\nConnections found: ${data.connections_found}\nConnections removed: ${data.connections_removed}\n\nHost successfully blocked!`);
+		            location.reload();
+		        } else {
+					// Extra alerts for debugging, if necessary
+		            //alert("Failed: " + (data.error || "unknown error"));
+		            location.reload();
+		        }
+		    } catch (err) {
+		        //alert("Network or server error: " + err);
+		        location.reload();
+		    }
+		}
     </script>
 </head>
 <body>
